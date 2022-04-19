@@ -3,11 +3,16 @@ package com.example.testwebsocket.Dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Setter
 @Getter
-public class ChatRoom {
+
+
+public class ChatRoom implements Serializable {
+
+    private static final long serialVersionUID = 6494678977089006639L;
 
     private String roomId;
     private String name;
@@ -55,6 +60,9 @@ public class ChatRoom {
     구현이 필요없어진다. DTO의 간소화.
 
 
+    --레디스 고도화
+    레디스에 저장되는 객체들은 Serialize 가능해야하므로 Serializable 을 참조하도록 선언
+    serialVersionUID 세팅
      */
 
 
