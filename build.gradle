@@ -33,6 +33,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    //redis설치없이 간단하게 임베디드 레디스를 사용
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //embedded-redis
+    implementation 'it.ozimov:embedded-redis:0.7.2'
 
 }
 

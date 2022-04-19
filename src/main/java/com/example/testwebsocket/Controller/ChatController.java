@@ -2,15 +2,14 @@ package com.example.testwebsocket.Controller;
 
 
 import com.example.testwebsocket.Dto.ChatMessage;
+import com.example.testwebsocket.Repository.ChatRoomRepository;
+import com.example.testwebsocket.Service.RedisPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/chat")
+@Controller
 public class ChatController {
 
 
@@ -28,14 +27,22 @@ public class ChatController {
 //    }
 //-- Stomp 고도화작업
 // 기존의 소켓 핸들러가 하던 역할을 대체한다.
+    // -- redis 고도화 작업
 
-    private final SimpMessageSendingOperations messagingTemplate;
+    //private final SimpMessageSendingOperations messagingTemplate;
 
-    @MessageMapping("/chat/message") // 메시지 발행을 처리 ,
+    private final RedisPublisher redisPublisher;
+    private final ChatRoomRepository chatRoomRepository;
+
+
+    //웹소켓 "/pub/chat/message" 로 들어오는 메시징을 처리
+    @MessageMapping("/chat/message")
     public void message(ChatMessage message) {
-        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
+        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
+            chatRoomRepository.enterChatRoom(message.getRoomId());
             message.setMessage(message.getSender() + "님이 입장하셨습니다.");
-        messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        }
+       //  messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        redisPublisher.publish(chatRoomRepository.getTopic(message.getRoomId()), message);
     }
-
 }
